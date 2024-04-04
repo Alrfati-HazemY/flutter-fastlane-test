@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main
+      - main  # Adjust this to your main branch name
 
 jobs:
   build_and_deploy:
@@ -13,19 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Ruby and Fastlane
+      - name: Install Ruby and Bundler
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7
+          ruby-version: 3.0
+
+      - name: Install specific version of Bundler
+        run: gem install bundler -v 2.4.22
 
       - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
+        run: bundle install
 
       - name: Authenticate with Firebase CLI
         run: |
-          echo ${{ secrets.FIREBASE_TOKEN }}
+          echo ${{ secrets.FIREBASE_TOKEN }} | firebase login:ci --no-localhost
 
       - name: Build and Deploy with Fastlane
         run: bundle exec fastlane deploy
